@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tqdx"
+version = "0.1.0"
+description = "JAX compatible progress bars for scan and fori_loop."
+readme = "README.md"
+requires-python = ">=3.7"
+license = "Apache-2.0"
+authors = [
+  { name = "huterguier", email = "huterguier@gmail.com" }
+]
+dependencies = [
+  "jax>=0.4.25",
+  "tqdm>=4.66.1",
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/huterguier/tqdx"
+
+[tool.setuptools.packages.find]
+include = ["tqdx"]
+exclude = ["images"]

@@ -1,6 +1,6 @@
 import jax
-from typing import Callable, TypeVar, Union
-from callbacks import init_pbar, update_pbar, close_pbar
+from typing import Callable, TypeVar
+from .callbacks import init_pbar, update_pbar, close_pbar
 
 
 Carry = TypeVar('Carry')

@@ -1,2 +1,4 @@
+from itertools import count
+
 pbars = {}
-next_id = 0
+pbar_ids = count()

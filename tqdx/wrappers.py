@@ -57,8 +57,8 @@ def fori_loop(lower, upper, body_fun, init_val,
     return out
 
 
-def tqdm(f):
-    """A decorator that adds a progress bar to a function."""
+def tqdx(f):
+    """A decorator that adds a progress to `jax.lax.scan` or `jax.lax.fori_loop`."""
     if f is jax.lax.scan:
         return scan
     elif f is jax.lax.fori_loop:

@@ -1,7 +1,11 @@
 import jax
 import jax.experimental
 import tqdm
-from .pbars import pbars, pbar_ids
+from itertools import count
+
+
+pbars: dict[str, tqdm.std.tqdm] = {}
+pbar_ids: count = count()
 
 
 def init_pbar(length: int) -> int:
@@ -19,7 +23,7 @@ def init_pbar(length: int) -> int:
     return id
 
 
-def update_pbar(id: int) -> None:
+def update_pbar(id: int):
     """Update the progress bar with the given id."""
     def callback(id):
         id = int(id)
@@ -28,7 +32,7 @@ def update_pbar(id: int) -> None:
     jax.debug.callback(callback, id)
 
 
-def close_pbar(id: int) -> None:
+def close_pbar(id: int):
     """Close the progress bar with the given id."""
     def callback(id):
         global pbars

@@ -1,6 +1,8 @@
 import jax
+import jax.core as core
 from typing import Callable, TypeVar
 from .callbacks import init_pbar, update_pbar, close_pbar
+from functools import wraps
 
 
 Carry = TypeVar('Carry')
@@ -8,6 +10,7 @@ X = TypeVar('X')
 Y = TypeVar('Y')
 
 
+@wraps(jax.lax.scan)
 def scan(f: Callable[[Carry, X], tuple[Carry, Y]],
          init: Carry,
          xs: X | None = None,
@@ -16,9 +19,22 @@ def scan(f: Callable[[Carry, X], tuple[Carry, Y]],
          unroll: int | bool = 1,
          _split_transpose: bool = False) -> tuple[Carry, Y]: 
     """A wrapper around jax.lax.scan that adds a progress bar."""
-    if length is None:
-        length = len(xs)
-    id = init_pbar(length)
+    xs_flat = jax.tree.leaves(xs)
+    try:
+        total = int(xs_flat[0].shape[0])
+    except AttributeError as err:
+        msg = "scan got value with no leading axis to scan over: {}."
+        raise ValueError(msg.format(', '.join(str(x) for x in xs_flat
+            if not hasattr(x, 'shape')))) from err
+    if length:
+        try:
+          total = int(length)
+        except core.ConcretizationTypeError as err:
+          msg = ('The `length` argument to `scan` expects a concrete `int` value.'
+                 ' For scan-like iteration with a dynamic length, use `while_loop`'
+                 ' or `fori_loop`.')
+
+    id = init_pbar(total)
 
     def wrapped_f(carry, x):
         out = f(carry, x)
@@ -37,11 +53,13 @@ def scan(f: Callable[[Carry, X], tuple[Carry, Y]],
     close_pbar(id)
     return out
 
+
+@wraps(jax.lax.fori_loop)
 def fori_loop(lower, upper, body_fun, init_val,
               *, unroll: int | bool | None = None):
     """A wrapper around jax.lax.fori_loop that adds a progress bar."""
-    length = upper - lower
-    id = init_pbar(length)
+    total = upper - lower
+    id = init_pbar(total)
 
     def wrapped_body_fun(i, val):
         out = body_fun(i, val)
@@ -59,7 +77,7 @@ def fori_loop(lower, upper, body_fun, init_val,
     return out
 
 
-def tqdx(f):
+def tqdx(f: Callable):
     """A decorator that adds a progress to `jax.lax.scan` or `jax.lax.fori_loop`."""
     if f is jax.lax.scan:
         return scan

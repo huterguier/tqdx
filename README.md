@@ -26,10 +26,13 @@ The following example demonstrates how to use `tqdx` with `jax.lax.scan` and `ja
 ```python
 import jax
 import tqdx
+from time import sleep
 
 def step(carry, x):
     def body_fun(i, val):
+        jax.debug.callback(lambda: sleep(0.5))
         return val + i
+    jax.debug.callback(lambda: sleep(0.5))
     carry = tqdx.fori_loop(0, 10, body_fun, carry)
     return carry, x + 1
 

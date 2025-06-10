@@ -22,31 +22,23 @@ Processing: 100%|█████████████████████
 - **No extra dependencies**: Only requires JAX and tqdm.
 
 ## Usage
-
-### Progress bar for scan
-
+The following example demonstrates how to use `tqdx` with `jax.lax.scan` and `jax.lax.fori_loop`. You can arbitrarily nest these functions, and the progress bars will still work correctly.
 ```python
+import jax
 import tqdx
-import jax.numpy as jnp
 
 def step(carry, x):
-    return carry + x, carry + x
+    def body_fun(i, val):
+        return val + i
+    carry = tqdx.fori_loop(0, 10, body_fun, carry)
+    return carry, x + 1
 
-xs = jnp.arange(100)
-carry_init = 0
+def f(xs):
+    return tqdx.scan(step, 0, xs)
 
-carry, ys = tqdx.scan(step, carry_init, xs)
-```
 
-### Progress bar for fori_loop
-
-```python
-import tqdx
-
-def body_fun(i, val):
-    return val + i
-
-result = tqdx.fori_loop(0, 100, body_fun, 0)
+xs = jax.numpy.arange(10)
+result, _ = jax.jit(f)(xs)
 ```
 
 ## Installation
@@ -54,4 +46,3 @@ result = tqdx.fori_loop(0, 100, body_fun, 0)
 ```bash
 pip install tqdx
 ```
-

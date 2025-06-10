@@ -37,7 +37,7 @@ def scan(f: Callable[[Carry, X], tuple[Carry, Y]],
                  ' or `fori_loop`.')
 
     if total == 0:
-        msg = "Either 'xs' or 'length' has to be provided when calling 'scan'"
+        msg = "Either `xs` or `length` has to be provided when calling `scan`"
         raise ValueError(msg)
 
                          

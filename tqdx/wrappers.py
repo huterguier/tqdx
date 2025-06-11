@@ -19,13 +19,15 @@ def scan(f: Callable[[Carry, X], tuple[Carry, Y]],
          unroll: int | bool = 1,
          _split_transpose: bool = False) -> tuple[Carry, Y]: 
     """A wrapper around jax.lax.scan that adds a progress bar."""
-    xs_flat = jax.tree.leaves(xs)
-    try:
-        total = int(xs_flat[0].shape[0])
-    except AttributeError as err:
-        msg = "scan got value with no leading axis to scan over: {}."
-        raise ValueError(msg.format(', '.join(str(x) for x in xs_flat
-            if not hasattr(x, 'shape')))) from err
+
+    total = 0
+    if xs:
+        xs_flat = jax.tree.leaves(xs)
+        try:
+            total = int(xs_flat[0].shape[0])
+        except AttributeError as err:
+            msg = "scan got value with no leading axis to scan over: {}."
+            raise ValueError(msg.format(', '.join(str(x) for x in xs_flat if not hasattr(x, 'shape')))) from err
     if length:
         try:
           total = int(length)
@@ -34,6 +36,11 @@ def scan(f: Callable[[Carry, X], tuple[Carry, Y]],
                  ' For scan-like iteration with a dynamic length, use `while_loop`'
                  ' or `fori_loop`.')
 
+    if total == 0:
+        msg = "Either `xs` or `length` has to be provided when calling `scan`"
+        raise ValueError(msg)
+
+                         
     id = init_pbar(total)
 
     def wrapped_f(carry, x):

@@ -1,6 +1,7 @@
 <div align="center">
     <img src="https://github.com/huterguier/tqdx/blob/main/images/tqdx.gif" width="250">
 </div>
+
 # tqdx
 Adds `tqdm` progress bars to `jax.lax.scan` and `jax.lax.fori_loop`. Progress bars commonly used in Python, such as tqdm, are not compatible with JAX's jit-compiled functions due to restrictions on side effects like printing. `tqdx` addresses this limitation by using callbacks to update progress bars created on the host.
 

@@ -21,7 +21,7 @@ def scan(f: Callable[[Carry, X], tuple[Carry, Y]],
     """A wrapper around jax.lax.scan that adds a progress bar."""
 
     total = 0
-    if xs:
+    if xs is not None:
         xs_flat = jax.tree.leaves(xs)
         try:
             total = int(xs_flat[0].shape[0])

@@ -1,14 +1,10 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "tqdx"
-version = "0.1.0"
+version = "0.1.1"
 description = "JAX compatible progress bars for scan and fori_loop."
 readme = "README.md"
-requires-python = ">=3.7"
-license = "Apache-2.0"
+requires-python = ">=3.9"
+license = "MIT"
 authors = [
   { name = "huterguier", email = "huterguier@gmail.com" }
 ]
@@ -27,3 +23,7 @@ Homepage = "https://github.com/huterguier/tqdx"
 [tool.setuptools.packages.find]
 include = ["tqdx"]
 exclude = ["images"]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

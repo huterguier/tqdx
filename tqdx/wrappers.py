@@ -40,7 +40,6 @@ def scan(f: Callable[[Carry, X], tuple[Carry, Y]],
         msg = "Either `xs` or `length` has to be provided when calling `scan`"
         raise ValueError(msg)
 
-                         
     id = init_pbar(total)
 
     def wrapped_f(carry, x):

@@ -22,7 +22,7 @@ def scan(f: Callable[[Carry, X], tuple[Carry, Y]],
 
     total = 0
     if xs is not None:
-        xs_flat = jax.tree.leaves(xs)
+        xs_flat = jax.tree_util.tree_leaves(xs)
         try:
             total = int(xs_flat[0].shape[0])
         except AttributeError as err:

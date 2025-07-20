@@ -42,22 +42,23 @@ def scan(f: Callable[[Carry, X], tuple[Carry, Y]],
 
     id = init_pbar(total)
 
-    def wrapped_f(carry, x):
-        out = f(carry, x)
-        update_pbar(id)
-        return out
+    def wrapped_f(carry_id, x):
+        carry, id = carry_id
+        carry, y = f(carry, x)
+        id = update_pbar(id)
+        return (carry, id), y
 
-    out = jax.lax.scan(
+    (carry, id), ys = jax.lax.scan(
         wrapped_f,
-        init,
+        (init, id),
         xs,
         length=length,
         reverse=reverse,
         unroll=unroll,
         _split_transpose=_split_transpose
     )
-    close_pbar(id)
-    return out
+    id = close_pbar(id)
+    return carry, ys
 
 
 @wraps(jax.lax.fori_loop)

@@ -29,7 +29,14 @@ def update_pbar(id: int):
         id = int(id)
         if str(id) in pbars:
             pbars[str(id)].update(1)
-    jax.debug.callback(callback, id)
+        return id
+
+    id = jax.experimental.io_callback(
+        callback,
+        result_shape_dtypes=jax.ShapeDtypeStruct((), jax.numpy.int32),
+        id=id
+    )
+    return id
 
 
 def close_pbar(id: int):
@@ -37,7 +44,15 @@ def close_pbar(id: int):
     def callback(id):
         global pbars
         id = int(id)
-        if id in pbars:
-            pbars[id].close()
-            del pbars[id]
-    jax.debug.callback(callback, id)
+        if str(id) in pbars:
+            pbars[str(id)].close()
+            del pbars[str(id)]
+        return id
+
+    id = jax.experimental.io_callback(
+        callback,
+        result_shape_dtypes=jax.ShapeDtypeStruct((), jax.numpy.int32),
+        id=id
+    )
+    return id
+

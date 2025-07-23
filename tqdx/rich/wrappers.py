@@ -4,7 +4,7 @@ from typing import Callable, TypeVar
 import jax
 import jax.core as core
 
-from tqdx.callbacks import close_pbar, init_pbar, update_pbar
+from tqdx.rich.callbacks import close_pbar, init_pbar, update_pbar
 
 Carry = TypeVar("Carry")
 X = TypeVar("X")

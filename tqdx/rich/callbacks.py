@@ -4,6 +4,7 @@ from itertools import count
 import jax
 import jax.experimental
 import tqdm
+import tqdm.rich as rich
 
 pbars: dict[str, tqdm.std.tqdm] = {}
 pbar_ids: count = count()
@@ -13,7 +14,7 @@ def init_pbar(**kwargs) -> int:
     """Initialize a progress bar with the given length."""
 
     def callback(**kwargs):
-        pbar = tqdm.tqdm(**kwargs)
+        pbar = rich.tqdm(**kwargs)
         id = next(pbar_ids)
         pbars[str(id)] = pbar
         return id

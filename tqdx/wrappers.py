@@ -1,23 +1,26 @@
+from functools import wraps
+from typing import Callable, TypeVar
+
 import jax
 import jax.core as core
-from typing import Callable, TypeVar
-from .callbacks import init_pbar, update_pbar, close_pbar
-from functools import wraps
 
+from tqdx.callbacks import close_pbar, init_pbar, update_pbar
 
-Carry = TypeVar('Carry')
-X = TypeVar('X')
-Y = TypeVar('Y')
+Carry = TypeVar("Carry")
+X = TypeVar("X")
+Y = TypeVar("Y")
 
 
 @wraps(jax.lax.scan)
-def scan(f: Callable[[Carry, X], tuple[Carry, Y]],
-         init: Carry,
-         xs: X | None = None,
-         length: int | None = None,
-         reverse: bool = False,
-         unroll: int | bool = 1,
-         _split_transpose: bool = False) -> tuple[Carry, Y]: 
+def scan(
+    f: Callable[[Carry, X], tuple[Carry, Y]],
+    init: Carry,
+    xs: X | None = None,
+    length: int | None = None,
+    reverse: bool = False,
+    unroll: int | bool = 1,
+    _split_transpose: bool = False,
+) -> tuple[Carry, Y]:
     """A wrapper around jax.lax.scan that adds a progress bar."""
 
     total = 0
@@ -27,14 +30,20 @@ def scan(f: Callable[[Carry, X], tuple[Carry, Y]],
             total = int(xs_flat[0].shape[0])
         except AttributeError as err:
             msg = "scan got value with no leading axis to scan over: {}."
-            raise ValueError(msg.format(', '.join(str(x) for x in xs_flat if not hasattr(x, 'shape')))) from err
+            raise ValueError(
+                msg.format(
+                    ", ".join(str(x) for x in xs_flat if not hasattr(x, "shape"))
+                )
+            ) from err
     if length:
         try:
-          total = int(length)
+            total = int(length)
         except core.ConcretizationTypeError as err:
-          msg = ('The `length` argument to `scan` expects a concrete `int` value.'
-                 ' For scan-like iteration with a dynamic length, use `while_loop`'
-                 ' or `fori_loop`.')
+            msg = (
+                "The `length` argument to `scan` expects a concrete `int` value."
+                " For scan-like iteration with a dynamic length, use `while_loop`"
+                " or `fori_loop`."
+            )
 
     if total == 0:
         msg = "Either `xs` or `length` has to be provided when calling `scan`"
@@ -55,15 +64,14 @@ def scan(f: Callable[[Carry, X], tuple[Carry, Y]],
         length=length,
         reverse=reverse,
         unroll=unroll,
-        _split_transpose=_split_transpose
+        _split_transpose=_split_transpose,
     )
     id = close_pbar(id)
     return carry, ys
 
 
 @wraps(jax.lax.fori_loop)
-def fori_loop(lower, upper, body_fun, init_val,
-              *, unroll: int | bool | None = None):
+def fori_loop(lower, upper, body_fun, init_val, *, unroll: int | bool | None = None):
     """A wrapper around jax.lax.fori_loop that adds a progress bar."""
     total = upper - lower
     id = init_pbar(total)
@@ -73,13 +81,7 @@ def fori_loop(lower, upper, body_fun, init_val,
         update_pbar(id)
         return out
 
-    out = jax.lax.fori_loop(
-        lower,
-        upper,
-        wrapped_body_fun,
-        init_val,
-        unroll=unroll
-    )
+    out = jax.lax.fori_loop(lower, upper, wrapped_body_fun, init_val, unroll=unroll)
     close_pbar(id)
     return out
 
@@ -92,3 +94,45 @@ def tqdx(f: Callable):
         return fori_loop
     else:
         raise ValueError("Function must be jax.lax.scan or jax.lax.fori_loop")
+
+
+if __name__ == "__main__":
+    import time
+
+    import jax.numpy as jnp
+
+    # Simple process test
+    def process(length: int, use_rich: bool):
+        bar = init_pbar(length, disable=False, use_rich=use_rich)
+        for _ in range(length):
+            time.sleep(0.05)
+            bar = update_pbar(bar)
+        close_pbar(bar)
+
+    print("\nTesting simple loop with rich-tqdm:")
+    process(30, use_rich=True)
+
+    print("\nTesting simple loop with standard tqdm:")
+    process(30, use_rich=False)
+
+    # Test jax.lax.scan wrapper
+    print("\nTesting jax.lax.scan wrapper:")
+
+    def f(carry, x):
+        # simulate work
+        time.sleep(0.02)
+        return carry + x, carry + x
+
+    xs = jnp.arange(1, 21)
+    carry_final, ys = scan(f, 0, xs)
+    print(f"Result carry: {carry_final}, last ys: {ys[-1]}")
+
+    # Test jax.lax.fori_loop wrapper
+    print("\nTesting jax.lax.fori_loop wrapper:")
+
+    def body(i, acc):
+        time.sleep(0.02)
+        return acc + i
+
+    total = fori_loop(0, 20, body, 0)
+    print(f"Sum 0 to 19: {total}")

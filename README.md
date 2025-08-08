@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="https://github.com/huterguier/tqdx/blob/main/images/tqdx.gif" width="220">
+    <img src="https://github.com/huterguier/tqdx/blob/main/images/tqdx.gif" width="200">
 </div>
 
 # tqdx

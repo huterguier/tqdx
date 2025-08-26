@@ -56,17 +56,3 @@ def close_pbar(id: int):
         callback, result_shape_dtypes=jax.ShapeDtypeStruct((), jax.numpy.int32), id=id
     )
     return id
-
-
-if __name__ == "__main__":
-    import time
-
-    def process(**kwargs):
-        bar_id = init_pbar(**kwargs)
-        for _ in range(kwargs.get("total", 30)):
-            time.sleep(0.05)
-            bar_id = update_pbar(bar_id)
-        close_pbar(bar_id)
-
-    process(total=30, disable=False, desc="Processing")
-    process(total=30, disable=True)

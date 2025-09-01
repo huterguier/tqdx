@@ -10,6 +10,7 @@ authors = [
 ]
 dependencies = [
   "jax>=0.4.25",
+  "rich>=14.0.0",
   "tqdm>=4.66.1",
 ]
 classifiers = [

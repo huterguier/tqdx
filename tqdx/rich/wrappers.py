@@ -79,12 +79,13 @@ def fori_loop(
     total = upper - lower
     id = init_pbar(total=total, **kwargs)
 
-    def wrapped_body_fun(i, val):
+    def wrapped_body_fun(i, val_id):
+        val, id = val_id
         out = body_fun(i, val)
         update_pbar(id)
-        return out
+        return out, id
 
-    out = jax.lax.fori_loop(lower, upper, wrapped_body_fun, init_val, unroll=unroll)
+    out, id = jax.lax.fori_loop(lower, upper, wrapped_body_fun, (init_val, id), unroll=unroll)
     close_pbar(id)
     return out
 

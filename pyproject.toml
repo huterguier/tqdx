@@ -18,6 +18,9 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 
+[project.optional-dependencies]
+dev = ["black", "isort"]
+
 [project.urls]
 Homepage = "https://github.com/huterguier/tqdx"
 

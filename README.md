@@ -20,10 +20,10 @@ Processing: 100%|█████████████████████
 ```
 ## Features
 
-- **Progress bars for JAX**: See the progress of your computations when using `jax.lax.scan` and `jax.lax.fori_loop`.
-- **Works with `jax.jit`**: Progress bars show up even inside jit-compiled code.
-- **Minimal syntax change**: Just replace your calls to `jax.lax.scan` and `jax.lax.fori_loop` with `tqdx.scan` and `tqdx.fori_loop`.
-- **No extra dependencies**: Only requires JAX and tqdm.
+- 📶 **Progress Bars for JAX**: See the progress of your computations when using `jax.lax.scan` and `jax.lax.fori_loop`.
+- ✅ **Works with `jax.jit`**: Progress bars also work inside of jit-compiled code by using callbacks.
+- 🤏 **Minimal Syntax Change**: Just replace your calls to `jax.lax.scan` and `jax.lax.fori_loop` with `tqdx.scan` and `tqdx.fori_loop`.
+- 🚫 **No extra Dependencies**: `tqdx` is extremely lightweight and requires JAX and tqdm.
 
 ## Usage
 The following example demonstrates how to use `tqdx` with `jax.lax.scan` and `jax.lax.fori_loop`. You can arbitrarily nest these functions, and the progress bars will still work correctly.
